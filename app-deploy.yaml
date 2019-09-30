@@ -1,14 +1,30 @@
-apiVersion: serving.knative.dev/v1alpha1
-kind: Service
+apiVersion: appsody.dev/v1beta1
+kind: AppsodyApplication
 metadata:
-  name: appsody-build-test
+  name: appsody-test-build
 spec:
-  runLatest:
-    configuration:
-      revisionTemplate:
-        spec:
-          container:
-            image: dev.local/appsody-build-test
-            imagePullPolicy: Never
-            ports:
-            - containerPort: 3000
+  # Add fields here
+  version: 1.0.0
+  applicationImage: appsody-test-build 
+  stack: nodejs-express
+  service:
+    type: NodePort
+    port: 3000
+    annotations:
+      prometheus.io/scrape: 'true'
+  readinessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /ready
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    timeoutSeconds: 1
+  livenessProbe:
+    failureThreshold: 12
+    httpGet:
+      path: /live
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 2
+  expose: true
